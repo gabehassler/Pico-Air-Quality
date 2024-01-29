@@ -31,7 +31,7 @@ Implementation Notes
 """
 
 import struct
-import time
+from adafruit_blinka.agnostic import time
 import math
 from micropython import const
 
