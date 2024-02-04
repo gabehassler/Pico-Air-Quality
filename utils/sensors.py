@@ -4,6 +4,7 @@ import busio
 import adafruit_bme680
 import adafruit_scd30
 from adafruit_pm25.i2c import PM25_I2C
+import json
 
 class Measurement:
     def __init__(self, name, sensor, unit, value):
@@ -18,7 +19,20 @@ class Measurement:
 
     def __str__(self):
         return f"{self.name}: {self.value} {self.unit}"
+    
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "sensor": self.sensor,
+            "unit": self.unit,
+            "value": self.value
+        }
 
+
+
+def read_all_json():
+    measurements = read_all()
+    return json.dumps([m.to_dict() for m in measurements])
 
     
 
@@ -50,8 +64,19 @@ def read_pm25():
         Measurement("Particles > 10 um / 0.1L air", "PM25", "count", aqdata["particles 100um"])
     ]
 
+# SENSORS = ["BME680", "SCD30", "PM25"]
 
-def read_all():
+# def read_sensor(sensor):
+#     if sensor == "BME680":
+#         return read_bme680()
+#     elif sensor == "SCD30":
+#         return read_scd30()
+#     elif sensor == "PM25":
+#         return read_pm25()
+#     else:
+#         raise ValueError(f"Unknown sensor: {sensor}")
+
+def read_all(): 
     return read_bme680() + read_scd30() + read_pm25()
 
 def print_all():

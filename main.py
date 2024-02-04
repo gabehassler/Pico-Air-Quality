@@ -1,28 +1,14 @@
-import network
-from time import sleep
+import utils.wifi as wifi
+from utils.mqtt import client, MACHINE_ID
+import utils.sensors as sensors
+import utime
 
-# read 'secrets.json' file
-
-import json
-with open('secrets.json') as f:
-    secrets = json.load(f)['wifi']
-
+wifi.connect()
+client.connect()
 
 
-
-
-def connect(max_attempts=10):
-    #Connect to WLAN
-    wlan = network.WLAN(network.STA_IF)
-    wlan.active(True)
-    wlan.connect(secrets['ssid'], secrets['password'])
-    attempts = 1
-    while wlan.isconnected() == False and attempts < max_attempts:
-        print('Connecting to network... attempt', attempts)
-        attempts += 1
-        sleep(1)
-    print("Connected to WiFi")
-
-
-connect()
+while True:
+    readings = sensors.read_all_json()
+    client.publish('sensors/air_quality', readings)
+    utime.sleep(60)
 
